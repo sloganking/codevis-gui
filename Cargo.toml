@@ -1,0 +1,10 @@
+[package]
+name = "codevis-gui"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rfd = "0.13.0"
+slint = "1.4.1"

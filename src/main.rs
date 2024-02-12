@@ -45,7 +45,8 @@ slint::slint! {
         height: 720px;
         callback select_render_path() -> string;
         callback render();
-        in property <image> display_image: @image-url("assets/code.png");
+        in-out property <image> display_image: @image-url("assets/code.png");
+        in-out property <string> path_to_render: "";
 
 
         HorizontalBox {
@@ -56,7 +57,10 @@ slint::slint! {
                 width: 300px;
 
                 PathSelector {
-                    select_path => { self.path = root.select_render_path() }
+                    select_path => {
+                        self.path = root.select_render_path();
+                        root.path_to_render = self.path;
+                    }
                 }
 
                 // HorizontalBox {
@@ -166,12 +170,15 @@ fn main() -> anyhow::Result<()> {
     {
         let tmp_output_png = tmp_output_png.clone();
         main_window.on_render(move || {
-            let path = Path::new("./");
+            let main_window = main_window_weak.unwrap();
+            // let path_to_render = Path::new("./");
+            let text: String = main_window.get_path_to_render().into();
+            let path_to_render = Path::new(&text);
 
             let should_interrupt = AtomicBool::new(false);
 
             let (mut dir_contents, mut ignored) =
-                codevis::unicode_content(&path, &[], Discard, &should_interrupt).unwrap();
+                codevis::unicode_content(&path_to_render, &[], Discard, &should_interrupt).unwrap();
 
             // Sort render order by path
             dir_contents
@@ -192,7 +199,10 @@ fn main() -> anyhow::Result<()> {
 
             println!("rendered img!");
 
-            sage_image(img, tmp_output_png.path(), Discard).unwrap();
+            sage_image(img, Path::new("./output.png"), Discard).unwrap();
+            let slint_img = slint::Image::load_from_path(Path::new("./output.png")).unwrap();
+            main_window.set_display_image(slint_img);
+            println!("set display image!");
         });
     }
 

@@ -32,6 +32,7 @@ slint::slint! {
         width: 1280px;
         height: 720px;
         callback select_render_path() -> string;
+        callback render();
 
         HorizontalBox {
             alignment: start;
@@ -64,15 +65,16 @@ slint::slint! {
                         model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
                     }
                 }
+                Button {
+                    primary: true;
+                    text: "Render";
+                    clicked => { root.render() }
+                }
             }
 
             // image
             Image {
                 source: @image-url("assets/code.png");
-            }
-            VerticalBox {
-                // Image of output
-
             }
 
         }
@@ -112,6 +114,8 @@ fn main() {
             None => "".into(),
         }
     });
+
+    main_window.on_render(move || {});
 
     main_window.run().unwrap();
 }

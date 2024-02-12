@@ -72,31 +72,28 @@ slint::slint! {
                 }
             }
 
-            // image
             Image {
                 source: @image-url("assets/code.png");
             }
 
-        }
-            // VerticalBox {
-            // alignment: start;
-            // //Text {
-            // //    text: "Hello World!";
-            // //    font-size: 24px;
-            // //    horizontal-alignment: center;
-            // //}
-            // // AboutSlint {
-            // //     preferred-height: 150px;
-            // // }
-
-            // HorizontalBox {
-            //     StandardButton { kind: ok; }
-            //     StandardButton { kind: apply; }
-            //     StandardButton { kind: cancel; }
+            // Rectangle{
+            //     background: red;
+            //     // alignment: center;
+            //     // horizontal-stretch: 1000%;
+            //     // width:  200px;
+            //     preferred-width: 100%;
+            //     Spinner {
+            //         vertical-stretch: 1;
+            //         // width: 100px;
+            //         min-width: 100px;
+            //         min-height: 100px;
+            //         // progress: i-progress-indicator.progress;
+            //         indeterminate: true;
+            //     }
             // }
 
-            // HorizontalLayout { alignment: center; Button { text: "OK!"; } }
 
+        }
     }
 }
 
@@ -115,7 +112,9 @@ fn main() {
         }
     });
 
-    main_window.on_render(move || {});
+    main_window.on_render(move || {
+        println!("Render!");
+    });
 
     main_window.run().unwrap();
 }

@@ -32,6 +32,7 @@ slint::slint! {
             LineEdit {
                 placeholder-text: @tr("Path to render");
                 text: path;
+                edited(string) => { path = string; }
             }
             Button {
                 text: "Browse";
@@ -46,7 +47,9 @@ slint::slint! {
         callback select_render_path() -> string;
         callback render();
         in-out property <image> display_image: @image-url("assets/code.png");
-        in-out property <string> path_to_render: "";
+
+        in-out property path_to_render <=> path_selecter.path;
+        // in-out property <string> path_to_render: "";
 
 
         HorizontalBox {
@@ -56,10 +59,9 @@ slint::slint! {
                 alignment: start;
                 width: 300px;
 
-                PathSelector {
+                path_selecter := PathSelector {
                     select_path => {
-                        self.path = root.select_render_path();
-                        root.path_to_render = self.path;
+                        root.path_to_render = root.select_render_path();
                     }
                 }
 
@@ -160,11 +162,13 @@ fn main() -> anyhow::Result<()> {
 
     main_window.on_render(move || {
         let main_window = main_window_weak.unwrap();
-        // let path_to_render = Path::new("./");
+
         let text: String = main_window.get_path_to_render().into();
         let path_to_render = Path::new(&text);
 
         let should_interrupt = AtomicBool::new(false);
+
+        println!("path_to_render: {:?}", path_to_render);
 
         let (mut dir_contents, mut ignored) =
             codevis::unicode_content(&path_to_render, &[], Discard, &should_interrupt).unwrap();

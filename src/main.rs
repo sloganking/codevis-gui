@@ -1,5 +1,10 @@
-// use slint::Model;
+// use codevis::Discard;
+// crate::prodash::progress::Discard`,
+use prodash;
+use prodash::progress::Discard;
 use rfd::FileDialog;
+use std::path::Path;
+use std::sync::atomic::AtomicBool;
 
 slint::slint! {
     import { AboutSlint, Button, VerticalBox } from "std-widgets.slint";
@@ -114,6 +119,13 @@ fn main() {
 
     main_window.on_render(move || {
         println!("Render!");
+
+        let path = Path::new("./");
+
+        let (mut dir_contents, mut ignored) =
+            codevis::unicode_content(&path, &[], Discard, &AtomicBool::new(false)).unwrap();
+
+        // codevis::render(&main_window_weak);
     });
 
     main_window.run().unwrap();

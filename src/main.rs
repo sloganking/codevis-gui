@@ -8,8 +8,10 @@ use prodash::progress::Discard;
 use rfd::FileDialog;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use syntect::highlighting::ThemeSet;
 use syntect::parsing::SyntaxSet;
+use tempfile::Builder;
 
 slint::slint! {
     import { AboutSlint, Button, VerticalBox } from "std-widgets.slint";
@@ -43,6 +45,8 @@ slint::slint! {
         height: 720px;
         callback select_render_path() -> string;
         callback render();
+        in property <image> display_image: @image-url("assets/code.png");
+
 
         HorizontalBox {
             alignment: start;
@@ -83,7 +87,7 @@ slint::slint! {
             }
 
             Image {
-                source: @image-url("assets/code.png");
+                source: root.display_image;
             }
 
             // Rectangle{
@@ -136,6 +140,15 @@ fn sage_image(
 }
 
 fn main() -> anyhow::Result<()> {
+    let tmp_output_png = Arc::new(
+        Builder::new()
+            .prefix("temp-file")
+            .suffix(".png")
+            .rand_bytes(16)
+            .tempfile()
+            .unwrap(),
+    );
+
     let main_window = MainWindow::new().unwrap();
 
     let main_window_weak = main_window.as_weak();
@@ -150,37 +163,38 @@ fn main() -> anyhow::Result<()> {
         }
     });
 
-    main_window.on_render(move || {
-        let path = Path::new("./");
+    {
+        let tmp_output_png = tmp_output_png.clone();
+        main_window.on_render(move || {
+            let path = Path::new("./");
 
-        let should_interrupt = AtomicBool::new(false);
+            let should_interrupt = AtomicBool::new(false);
 
-        let (mut dir_contents, mut ignored) =
-            codevis::unicode_content(&path, &[], Discard, &should_interrupt).unwrap();
+            let (mut dir_contents, mut ignored) =
+                codevis::unicode_content(&path, &[], Discard, &should_interrupt).unwrap();
 
-        // Sort render order by path
-        dir_contents
-            .children_content
-            .sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
+            // Sort render order by path
+            dir_contents
+                .children_content
+                .sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
 
-        let ts = ThemeSet::load_defaults();
-        let ss = SyntaxSet::load_defaults_newlines();
-        let img = codevis::render(
-            &dir_contents,
-            Discard,
-            &should_interrupt,
-            &ss,
-            &ts,
-            codevis::render::Options::default(),
-        )
-        .unwrap();
+            let ts = ThemeSet::load_defaults();
+            let ss = SyntaxSet::load_defaults_newlines();
+            let img = codevis::render(
+                &dir_contents,
+                Discard,
+                &should_interrupt,
+                &ss,
+                &ts,
+                codevis::render::Options::default(),
+            )
+            .unwrap();
 
-        println!("rendered img!");
+            println!("rendered img!");
 
-        let output_path = Path::new("./output.png");
-
-        sage_image(img, output_path, Discard).unwrap();
-    });
+            sage_image(img, tmp_output_png.path(), Discard).unwrap();
+        });
+    }
 
     main_window.run().unwrap();
     Ok(())

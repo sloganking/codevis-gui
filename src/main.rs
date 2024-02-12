@@ -1,10 +1,15 @@
 // use codevis::Discard;
 // crate::prodash::progress::Discard`,
+use anyhow::Context;
+use image::{ImageBuffer, Rgb};
+use memmap2::MmapMut;
 use prodash;
 use prodash::progress::Discard;
 use rfd::FileDialog;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
+use syntect::highlighting::ThemeSet;
+use syntect::parsing::SyntaxSet;
 
 slint::slint! {
     import { AboutSlint, Button, VerticalBox } from "std-widgets.slint";
@@ -102,7 +107,35 @@ slint::slint! {
     }
 }
 
-fn main() {
+fn sage_image(
+    img: ImageBuffer<Rgb<u8>, MmapMut>,
+    img_path: &Path,
+    mut progress: impl prodash::Progress,
+) -> anyhow::Result<()> {
+    let start = std::time::Instant::now();
+    progress.init(
+        Some(img.width() as usize * img.height() as usize * 3),
+        Some(prodash::unit::dynamic_and_mode(
+            prodash::unit::Bytes,
+            prodash::unit::display::Mode::with_throughput(),
+        )),
+    );
+
+    // There is no image format that can reasonably stream arbitrary image formats, so writing
+    // isn't interactive.
+    // I think the goal would be to write a TGA file (it can handle huge files in theory while being uncompressed)
+    // and write directly into a memory map on disk, or any other format that can.
+    // In the mean time, PNG files work as well even though some apps are buggy with these image resolutions.
+    img.save(img_path)?;
+    let bytes = img_path
+        .metadata()
+        .map_or(0, |md| md.len() as prodash::progress::Step);
+    progress.inc_by(bytes);
+    progress.show_throughput(start);
+    Ok(())
+}
+
+fn main() -> anyhow::Result<()> {
     let main_window = MainWindow::new().unwrap();
 
     let main_window_weak = main_window.as_weak();
@@ -118,15 +151,37 @@ fn main() {
     });
 
     main_window.on_render(move || {
-        println!("Render!");
-
         let path = Path::new("./");
 
-        let (mut dir_contents, mut ignored) =
-            codevis::unicode_content(&path, &[], Discard, &AtomicBool::new(false)).unwrap();
+        let should_interrupt = AtomicBool::new(false);
 
-        // codevis::render(&main_window_weak);
+        let (mut dir_contents, mut ignored) =
+            codevis::unicode_content(&path, &[], Discard, &should_interrupt).unwrap();
+
+        // Sort render order by path
+        dir_contents
+            .children_content
+            .sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
+
+        let ts = ThemeSet::load_defaults();
+        let ss = SyntaxSet::load_defaults_newlines();
+        let img = codevis::render(
+            &dir_contents,
+            Discard,
+            &should_interrupt,
+            &ss,
+            &ts,
+            codevis::render::Options::default(),
+        )
+        .unwrap();
+
+        println!("rendered img!");
+
+        let output_path = Path::new("./output.png");
+
+        sage_image(img, output_path, Discard).unwrap();
     });
 
     main_window.run().unwrap();
+    Ok(())
 }

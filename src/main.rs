@@ -40,35 +40,30 @@ slint::slint! {
                 alignment: start;
                 width: 300px;
 
-                // HorizontalBox {
-                //     LineEdit {
-                //         placeholder-text: @tr("Path to render");
-
-                //         in-out property <string> render-path;
-                //         text: render-path;
-                //     }
-                //     Button {
-                //         text: "Browse";
-                //         clicked => { root.select_render_path() }
-                //     }
-                // }
-
                 PathSelector {
                     select_path => { self.path = root.select_render_path() }
                 }
 
-                HorizontalBox {
-                    StandardButton { kind: ok; }
-                    StandardButton { kind: apply; }
-                }
-                StandardButton { kind: cancel; }
+                // HorizontalBox {
+                //     alignment: start;
+                //     StandardButton { kind: ok; }
+                //     StandardButton { kind: apply; }
+                // }
+                // StandardButton { kind: cancel; }
                 Switch {
                     text: @tr("Readable");
                     checked: true;
                 }
 
-                // the dir to render
-
+                HorizontalBox {
+                    Text {
+                        vertical-alignment: center;
+                        text: @tr("Theme: ");
+                    }
+                    ComboBox {
+                        model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
+                    }
+                }
             }
 
             // image

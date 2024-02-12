@@ -144,15 +144,6 @@ fn sage_image(
 }
 
 fn main() -> anyhow::Result<()> {
-    let tmp_output_png = Arc::new(
-        Builder::new()
-            .prefix("temp-file")
-            .suffix(".png")
-            .rand_bytes(16)
-            .tempfile()
-            .unwrap(),
-    );
-
     let main_window = MainWindow::new().unwrap();
 
     let main_window_weak = main_window.as_weak();
@@ -167,44 +158,48 @@ fn main() -> anyhow::Result<()> {
         }
     });
 
-    {
-        let tmp_output_png = tmp_output_png.clone();
-        main_window.on_render(move || {
-            let main_window = main_window_weak.unwrap();
-            // let path_to_render = Path::new("./");
-            let text: String = main_window.get_path_to_render().into();
-            let path_to_render = Path::new(&text);
+    main_window.on_render(move || {
+        let main_window = main_window_weak.unwrap();
+        // let path_to_render = Path::new("./");
+        let text: String = main_window.get_path_to_render().into();
+        let path_to_render = Path::new(&text);
 
-            let should_interrupt = AtomicBool::new(false);
+        let should_interrupt = AtomicBool::new(false);
 
-            let (mut dir_contents, mut ignored) =
-                codevis::unicode_content(&path_to_render, &[], Discard, &should_interrupt).unwrap();
+        let (mut dir_contents, mut ignored) =
+            codevis::unicode_content(&path_to_render, &[], Discard, &should_interrupt).unwrap();
 
-            // Sort render order by path
-            dir_contents
-                .children_content
-                .sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
+        // Sort render order by path
+        dir_contents
+            .children_content
+            .sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
 
-            let ts = ThemeSet::load_defaults();
-            let ss = SyntaxSet::load_defaults_newlines();
-            let img = codevis::render(
-                &dir_contents,
-                Discard,
-                &should_interrupt,
-                &ss,
-                &ts,
-                codevis::render::Options::default(),
-            )
+        let ts = ThemeSet::load_defaults();
+        let ss = SyntaxSet::load_defaults_newlines();
+        let img = codevis::render(
+            &dir_contents,
+            Discard,
+            &should_interrupt,
+            &ss,
+            &ts,
+            codevis::render::Options::default(),
+        )
+        .unwrap();
+
+        println!("rendered img!");
+
+        let tmp_output_png = Builder::new()
+            .prefix("temp-file")
+            .suffix(".png")
+            .rand_bytes(16)
+            .tempfile()
             .unwrap();
 
-            println!("rendered img!");
-
-            sage_image(img, Path::new("./output.png"), Discard).unwrap();
-            let slint_img = slint::Image::load_from_path(Path::new("./output.png")).unwrap();
-            main_window.set_display_image(slint_img);
-            println!("set display image!");
-        });
-    }
+        sage_image(img, tmp_output_png.path(), Discard).unwrap();
+        let slint_img = slint::Image::load_from_path(tmp_output_png.path()).unwrap();
+        main_window.set_display_image(slint_img);
+        println!("set display image!");
+    });
 
     main_window.run().unwrap();
     Ok(())

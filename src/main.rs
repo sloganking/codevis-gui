@@ -44,13 +44,11 @@ slint::slint! {
     export component MainWindow inherits Window {
         width: 1280px;
         height: 720px;
-        callback select_render_path() -> string;
+        callback select_render_path();
         callback render();
         in-out property <image> display_image: @image-url("assets/code.png");
 
         in-out property path_to_render <=> path_selecter.path;
-        // in-out property <string> path_to_render: "";
-
 
         HorizontalBox {
             alignment: start;
@@ -61,7 +59,7 @@ slint::slint! {
 
                 path_selecter := PathSelector {
                     select_path => {
-                        root.path_to_render = root.select_render_path();
+                        root.select_render_path();
                     }
                 }
 
@@ -150,16 +148,18 @@ fn main() -> anyhow::Result<()> {
 
     let main_window_weak = main_window.as_weak();
     main_window.on_select_render_path(move || {
+        let main_window = main_window_weak.unwrap();
+
         let folder = FileDialog::new().pick_folder();
 
         println!("{:?}", folder);
 
-        match folder {
-            Some(folder) => folder.to_string_lossy().to_string().into(),
-            None => "".into(),
+        if let Some(folder) = folder {
+            main_window.set_path_to_render(folder.to_string_lossy().to_string().into());
         }
     });
 
+    let main_window_weak = main_window.as_weak();
     main_window.on_render(move || {
         let main_window = main_window_weak.unwrap();
 

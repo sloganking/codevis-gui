@@ -248,7 +248,6 @@ slint::slint! {
                                     minimum: 1;
                                     maximum: 2147483647; // Maximum for i32
                                     enabled: auto_render_switch.checked;
-                                    visible: auto_render_switch.checked;
                                 }
                             }
 

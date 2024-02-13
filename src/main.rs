@@ -178,6 +178,7 @@ slint::slint! {
             Image {
                 horizontal-stretch: 1;
                 source: root.display_image;
+                image-rendering: pixelated;
             }
         }
     }

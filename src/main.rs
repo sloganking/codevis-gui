@@ -49,6 +49,7 @@ slint::slint! {
         in-out property <image> display_image: @image-url("assets/code.png");
 
         in-out property path_to_render <=> path_selecter.path;
+        out property <bool> readable <=> readable_switch.checked;
 
         HorizontalBox {
             alignment: start;
@@ -69,7 +70,7 @@ slint::slint! {
                 //     StandardButton { kind: apply; }
                 // }
                 // StandardButton { kind: cancel; }
-                Switch {
+                readable_switch := Switch {
                     text: @tr("Readable");
                     checked: true;
                 }
@@ -186,7 +187,14 @@ fn main() -> anyhow::Result<()> {
             &should_interrupt,
             &ss,
             &ts,
-            codevis::render::Options::default(),
+            // codevis::render::Options::default(),
+            codevis::render::Options {
+                // Set specific fields here
+                readable: main_window.get_readable(),
+
+                // Set the rest of the fields to their default values
+                ..Default::default()
+            },
         )
         .unwrap();
 

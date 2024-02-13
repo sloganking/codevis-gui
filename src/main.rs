@@ -1,6 +1,7 @@
 // use codevis::Discard;
 // crate::prodash::progress::Discard`,
 use anyhow::Context;
+use codevis::render::BgColor;
 use image::{ImageBuffer, Rgb};
 use memmap2::MmapMut;
 use prodash;
@@ -51,6 +52,7 @@ slint::slint! {
         in-out property path_to_render <=> path_selecter.path;
         out property <bool> readable <=> readable_switch.checked;
         out property <string> theme <=> theme_combobox.current-value;
+        out property <int> bg_pixel_color <=> bg_pixel_color_combobox.current-index;
 
         HorizontalBox {
             alignment: start;
@@ -78,6 +80,16 @@ slint::slint! {
                     }
                     theme_combobox := ComboBox {
                         model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
+                    }
+                }
+
+                HorizontalBox {
+                    Text {
+                        vertical-alignment: center;
+                        text: @tr("bg-pixel-color: ");
+                    }
+                    bg_pixel_color_combobox := ComboBox {
+                        model: ["style", "style-checkerboard-darken", "style-checkerboard-brighten", "helix-editor"];
                     }
                 }
                 Button {
@@ -190,6 +202,16 @@ fn main() -> anyhow::Result<()> {
                     // Set specific fields here
                     readable: main_window.get_readable(),
                     theme: &theme.clone(),
+                    bg_color: {
+                        match main_window.get_bg_pixel_color() {
+                            0 => BgColor::Style,
+                            1 => BgColor::StyleCheckerboardDarken,
+                            2 => BgColor::StyleCheckerboardBrighten,
+                            3 => BgColor::HelixEditor,
+                            _ => BgColor::Style,
+                        }
+                    },
+                    // bg_pixel_color: main_window.get_bg_pixel_color(),
                     // Set the rest of the fields to their default values
                     ..Default::default()
                 }

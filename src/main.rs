@@ -123,15 +123,19 @@ slint::slint! {
                             checked: false;
                         }
 
+                        Text {
+                            // vertical-alignment: center;
+                            text: @tr("Aspect Ratio:");
+                        }
                         HorizontalBox {
-                            Text {
-                                vertical-alignment: center;
-                                text: @tr("Aspect Ratio: ");
-                            }
                             aspect_x_spinbox := SpinBox {
                                 value: 16;
                                 minimum: 1;
                                 maximum: 2147483647; // Maximum for i32
+                            }
+                            Text {
+                                vertical-alignment: center;
+                                text: @tr("by");
                             }
                             aspect_y_spinbox := SpinBox {
                                 value: 9;

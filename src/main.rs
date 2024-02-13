@@ -1,6 +1,5 @@
 // use codevis::Discard;
 // crate::prodash::progress::Discard`,
-use anyhow::Context;
 use codevis::render::BgColor;
 use image::{ImageBuffer, Rgb};
 use memmap2::MmapMut;
@@ -9,7 +8,6 @@ use prodash::progress::Discard;
 use rfd::FileDialog;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
-use std::sync::Arc;
 use syntect::highlighting::ThemeSet;
 use syntect::parsing::SyntaxSet;
 use tempfile::Builder;
@@ -179,7 +177,7 @@ fn main() -> anyhow::Result<()> {
 
         println!("path_to_render: {:?}", path_to_render);
 
-        let (mut dir_contents, mut ignored) =
+        let (mut dir_contents, mut _ignored) =
             codevis::unicode_content(&path_to_render, &[], Discard, &should_interrupt).unwrap();
 
         // Sort render order by path

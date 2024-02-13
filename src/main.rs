@@ -172,24 +172,6 @@ slint::slint! {
             Image {
                 source: root.display_image;
             }
-
-            // Rectangle{
-            //     background: red;
-            //     // alignment: center;
-            //     // horizontal-stretch: 1000%;
-            //     // width:  200px;
-            //     preferred-width: 100%;
-            //     Spinner {
-            //         vertical-stretch: 1;
-            //         // width: 100px;
-            //         min-width: 100px;
-            //         min-height: 100px;
-            //         // progress: i-progress-indicator.progress;
-            //         indeterminate: true;
-            //     }
-            // }
-
-
         }
     }
 }

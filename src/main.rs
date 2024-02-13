@@ -29,19 +29,20 @@ slint::slint! {
     component PathSelector {
         callback select_path;
         callback edited;
-        in-out property <string> path;
+        in-out property <string> path <=> path_selector_lineedit.text;
         HorizontalBox {
-            LineEdit {
+            path_selector_lineedit := LineEdit {
                 placeholder-text: @tr("Path to render");
-                text: path;
                 edited(string) => {
-                    path = string;
                     root.edited();
                 }
             }
             path_selector_button := Button {
                 text: "Browse";
-                clicked => { root.select_path() }
+                clicked => {
+                    root.select_path();
+                    root.edited();
+                }
             }
         }
     }

@@ -81,6 +81,11 @@ slint::slint! {
                             readable_switch := Switch {
                                 text: @tr("Readable");
                                 checked: false;
+                                toggled => {
+                                    if auto_render_switch.checked {
+                                        root.render()
+                                    }
+                                }
                             }
 
                             HorizontalBox {
@@ -90,6 +95,11 @@ slint::slint! {
                                 }
                                 theme_combobox := ComboBox {
                                     model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
+                                    selected => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
+                                    }
                                 }
                             }
 
@@ -100,6 +110,11 @@ slint::slint! {
                                 }
                                 bg_pixel_color_combobox := ComboBox {
                                     model: ["style", "style-checkerboard-darken", "style-checkerboard-brighten", "helix-editor"];
+                                    selected => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
+                                    }
                                 }
                             }
 
@@ -113,17 +128,32 @@ slint::slint! {
                                     value: 4;
                                     minimum: 1;
                                     maximum: 16;
+                                    edited => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
+                                    }
                                 }
                             }
 
                             line_num_switch := Switch {
                                 text: @tr("line numbers");
                                 checked: false;
+                                toggled => {
+                                    if auto_render_switch.checked {
+                                        root.render()
+                                    }
+                                }
                             }
 
                             file_names_switch := Switch {
                                 text: @tr("file names");
                                 checked: false;
+                                toggled => {
+                                    if auto_render_switch.checked {
+                                        root.render()
+                                    }
+                                }
                             }
 
                             Text {
@@ -135,6 +165,11 @@ slint::slint! {
                                     value: 16;
                                     minimum: 1;
                                     maximum: 2147483647; // Maximum for i32
+                                    edited => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
+                                    }
                                 }
                                 Text {
                                     vertical-alignment: center;
@@ -144,6 +179,11 @@ slint::slint! {
                                     value: 9;
                                     minimum: 1;
                                     maximum: 2147483647; // Maximum for i32
+                                    edited => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
+                                    }
                                 }
                             }
 
@@ -151,6 +191,11 @@ slint::slint! {
                             force_full_columns_switch := Switch {
                                 text: @tr("force full columns");
                                 checked: true;
+                                toggled => {
+                                    if auto_render_switch.checked {
+                                        root.render()
+                                    }
+                                }
                             }
 
                             // ignored extensions
@@ -161,6 +206,11 @@ slint::slint! {
                                 }
                                 ignored_extension_lineedit := LineEdit {
                                     placeholder-text: @tr("ignored extensions");
+                                    edited => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
+                                    }
                                 }
                             }
 

@@ -164,11 +164,38 @@ slint::slint! {
                                 }
                             }
 
+                            // auto render
+                            auto_render_switch := Switch {
+                                text: @tr("Auto render");
+                                checked: false;
+                                toggled => {
+                                    if auto_render_switch.checked {
+                                        root.render()
+                                    }
+                                }
+                            }
+                            HorizontalLayout {
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("Auto render line count limit: ");
+                                }
+
+                                auto_render_spinbox := SpinBox {
+                                    value: 100000;
+                                    minimum: 1;
+                                    maximum: 2147483647; // Maximum for i32
+                                    enabled: auto_render_switch.checked;
+                                    visible: auto_render_switch.checked;
+                                }
+                            }
+
+
 
                             Button {
                                 primary: true;
                                 text: "Render";
                                 clicked => { root.render() }
+                                enabled: !auto_render_switch.checked;
                             }
                         }
                     }

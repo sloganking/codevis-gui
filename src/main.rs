@@ -6,6 +6,7 @@ use memmap2::MmapMut;
 use prodash;
 use prodash::progress::Discard;
 use rfd::FileDialog;
+use slint::{Rgb8Pixel, SharedPixelBuffer};
 use std::ffi::OsString;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
@@ -27,14 +28,18 @@ slint::slint! {
 
     component PathSelector {
         callback select_path;
+        callback edited;
         in-out property <string> path;
         HorizontalBox {
             LineEdit {
                 placeholder-text: @tr("Path to render");
                 text: path;
-                edited(string) => { path = string; }
+                edited(string) => {
+                    path = string;
+                    root.edited();
+                }
             }
-            Button {
+            path_selector_button := Button {
                 text: "Browse";
                 clicked => { root.select_path() }
             }
@@ -58,6 +63,8 @@ slint::slint! {
         out property <int> aspect_y <=> aspect_y_spinbox.value;
         out property <bool> force_full_columns <=> force_full_columns_switch.checked;
         out property <string> ignored_extensions <=> ignored_extension_lineedit.text;
+        out property <bool> auto_rendering <=> auto_render_switch.checked;
+        out property <int> auto_render_limit <=> auto_render_spinbox.value;
 
         HorizontalBox {
             alignment: stretch;
@@ -75,6 +82,11 @@ slint::slint! {
                             path_selecter := PathSelector {
                                 select_path => {
                                     root.select_render_path();
+                                }
+                                edited => {
+                                    if auto_render_switch.checked {
+                                        root.render()
+                                    }
                                 }
                             }
 
@@ -312,6 +324,13 @@ fn main() -> anyhow::Result<()> {
         let text: String = main_window.get_path_to_render().into();
         let path_to_render = Path::new(&text);
 
+        if !path_to_render.is_dir() {
+            let pixel_buffer = SharedPixelBuffer::<Rgb8Pixel>::new(1, 1);
+            let slint_img = slint::Image::from_rgb8(pixel_buffer);
+            main_window.set_display_image(slint_img);
+            return;
+        }
+
         let should_interrupt = AtomicBool::new(false);
 
         println!("path_to_render: {:?}", path_to_render);
@@ -333,6 +352,22 @@ fn main() -> anyhow::Result<()> {
         dir_contents
             .children_content
             .sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
+
+        if main_window.get_auto_rendering() {
+            // count lines in dir_contents
+            let mut total_line_count = 0;
+            for (_, text) in &dir_contents.children_content {
+                total_line_count += text.lines().count();
+            }
+
+            // don't render if too much content
+            if total_line_count > main_window.get_auto_render_limit().try_into().unwrap() {
+                let pixel_buffer = SharedPixelBuffer::<Rgb8Pixel>::new(1, 1);
+                let slint_img = slint::Image::from_rgb8(pixel_buffer);
+                main_window.set_display_image(slint_img);
+                return;
+            }
+        }
 
         let ts = ThemeSet::load_defaults();
         let ss = SyntaxSet::load_defaults_newlines();

@@ -52,6 +52,7 @@ slint::slint! {
         out property <string> theme <=> theme_combobox.current-value;
         out property <int> bg_pixel_color <=> bg_pixel_color_combobox.current-index;
         out property <int> tab_spaces <=> tab_spaces_spinbox.value;
+        out property <bool> line_nums <=> line_num_switch.checked;
 
         HorizontalBox {
             alignment: start;
@@ -66,7 +67,6 @@ slint::slint! {
                     }
                 }
 
-                // StandardButton { kind: cancel; }
                 readable_switch := Switch {
                     text: @tr("Readable");
                     checked: false;
@@ -104,6 +104,11 @@ slint::slint! {
                         minimum: 1;
                         maximum: 16;
                     }
+                }
+
+                line_num_switch := Switch {
+                    text: @tr("line numbers: ");
+                    checked: false;
                 }
 
                 Button {
@@ -226,7 +231,8 @@ fn main() -> anyhow::Result<()> {
                         }
                     },
                     tab_spaces: main_window.get_tab_spaces().try_into().unwrap(),
-                    // bg_pixel_color: main_window.get_bg_pixel_color(),
+                    line_nums: main_window.get_line_nums(),
+
                     // Set the rest of the fields to their default values
                     ..Default::default()
                 }

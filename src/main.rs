@@ -54,6 +54,8 @@ slint::slint! {
         out property <int> tab_spaces <=> tab_spaces_spinbox.value;
         out property <bool> line_nums <=> line_num_switch.checked;
         out property <bool> show_filenames <=> file_names_switch.checked;
+        out property <int> aspect_x <=> aspect_x_spinbox.value;
+        out property <int> aspect_y <=> aspect_y_spinbox.value;
 
         HorizontalBox {
             alignment: start;
@@ -100,7 +102,6 @@ slint::slint! {
                         text: @tr("tab spaces: ");
                     }
                     tab_spaces_spinbox := SpinBox {
-                        // vertical-stretch: 0;
                         value: 4;
                         minimum: 1;
                         maximum: 16;
@@ -115,6 +116,23 @@ slint::slint! {
                 file_names_switch := Switch {
                     text: @tr("file names");
                     checked: false;
+                }
+
+                HorizontalBox {
+                    Text {
+                        vertical-alignment: center;
+                        text: @tr("Aspect Ratio: ");
+                    }
+                    aspect_x_spinbox := SpinBox {
+                        value: 16;
+                        minimum: 1;
+                        maximum: 2147483647; // Maximum for i32
+                    }
+                    aspect_y_spinbox := SpinBox {
+                        value: 9;
+                        minimum: 1;
+                        maximum: 2147483647; // Maximum for i32
+                    }
                 }
 
                 Button {
@@ -239,6 +257,11 @@ fn main() -> anyhow::Result<()> {
                     tab_spaces: main_window.get_tab_spaces().try_into().unwrap(),
                     line_nums: main_window.get_line_nums(),
                     show_filenames: main_window.get_show_filenames(),
+                    target_aspect_ratio: {
+                        let aspect_x = main_window.get_aspect_x();
+                        let aspect_y = main_window.get_aspect_y();
+                        aspect_x as f64 / aspect_y as f64
+                    },
 
                     // Set the rest of the fields to their default values
                     ..Default::default()

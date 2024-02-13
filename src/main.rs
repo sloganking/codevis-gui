@@ -6,7 +6,7 @@ use memmap2::MmapMut;
 use prodash;
 use prodash::progress::Discard;
 use rfd::FileDialog;
-use std::ffi::{OsStr, OsString};
+use std::ffi::OsString;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
 use syntect::highlighting::ThemeSet;

@@ -46,7 +46,7 @@ slint::slint! {
         height: 720px;
         callback select_render_path();
         callback render();
-        in property <image> display_image: @image-url("assets/code.png");
+        in property <image> display_image: @image-url("");
         in-out property path_to_render <=> path_selecter.path;
         out property <bool> readable <=> readable_switch.checked;
         out property <string> theme <=> theme_combobox.current-value;

@@ -50,6 +50,7 @@ slint::slint! {
 
         in-out property path_to_render <=> path_selecter.path;
         out property <bool> readable <=> readable_switch.checked;
+        out property <string> theme <=> theme_combobox.current-value;
 
         HorizontalBox {
             alignment: start;
@@ -80,7 +81,7 @@ slint::slint! {
                         vertical-alignment: center;
                         text: @tr("Theme: ");
                     }
-                    ComboBox {
+                    theme_combobox := ComboBox {
                         model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
                     }
                 }
@@ -188,12 +189,15 @@ fn main() -> anyhow::Result<()> {
             &ss,
             &ts,
             // codevis::render::Options::default(),
-            codevis::render::Options {
-                // Set specific fields here
-                readable: main_window.get_readable(),
-
-                // Set the rest of the fields to their default values
-                ..Default::default()
+            {
+                let theme: String = main_window.get_theme().into();
+                codevis::render::Options {
+                    // Set specific fields here
+                    readable: main_window.get_readable(),
+                    theme: &theme.clone(),
+                    // Set the rest of the fields to their default values
+                    ..Default::default()
+                }
             },
         )
         .unwrap();

@@ -358,11 +358,18 @@ fn main() -> anyhow::Result<()> {
             // count lines in dir_contents
             let mut total_line_count = 0;
             for (_, text) in &dir_contents.children_content {
-                total_line_count += text.lines().count();
+                if !text.is_empty() {
+                    // println!("text: {}\n\n", text);
+                    total_line_count += text.lines().count();
+                }
             }
 
-            // don't render if too much content
-            if total_line_count > main_window.get_auto_render_limit().try_into().unwrap() {
+            println!("total_line_count: {}", total_line_count);
+
+            // don't render if too much or too little content
+            if total_line_count == 0
+                || total_line_count > main_window.get_auto_render_limit().try_into().unwrap()
+            {
                 let pixel_buffer = SharedPixelBuffer::<Rgb8Pixel>::new(1, 1);
                 let slint_img = slint::Image::from_rgb8(pixel_buffer);
                 main_window.set_display_image(slint_img);

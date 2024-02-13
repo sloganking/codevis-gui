@@ -65,11 +65,6 @@ slint::slint! {
                     }
                 }
 
-                // HorizontalBox {
-                //     alignment: start;
-                //     StandardButton { kind: ok; }
-                //     StandardButton { kind: apply; }
-                // }
                 // StandardButton { kind: cancel; }
                 readable_switch := Switch {
                     text: @tr("Readable");

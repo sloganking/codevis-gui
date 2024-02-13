@@ -60,118 +60,123 @@ slint::slint! {
         out property <string> ignored_extensions <=> ignored_extension_lineedit.text;
 
         HorizontalBox {
-            alignment: start;
+            alignment: stretch;
             // Left settings panel
-            VerticalBox {
-                alignment: center;
-                GroupBox {
-                    title: @tr("Settings");
-                    VerticalBox {
-                        alignment: start;
 
-                        path_selecter := PathSelector {
-                            select_path => {
-                                root.select_render_path();
-                            }
-                        }
-
-                        readable_switch := Switch {
-                            text: @tr("Readable");
-                            checked: false;
-                        }
-
-                        HorizontalBox {
-                            Text {
-                                vertical-alignment: center;
-                                text: @tr("Theme: ");
-                            }
-                            theme_combobox := ComboBox {
-                                model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
-                            }
-                        }
-
-                        HorizontalBox {
-                            Text {
-                                vertical-alignment: center;
-                                text: @tr("bg-pixel-color: ");
-                            }
-                            bg_pixel_color_combobox := ComboBox {
-                                model: ["style", "style-checkerboard-darken", "style-checkerboard-brighten", "helix-editor"];
-                            }
-                        }
-
-                        //tab spaces
-                        HorizontalBox {
-                            Text {
-                                vertical-alignment: center;
-                                text: @tr("tab spaces: ");
-                            }
-                            tab_spaces_spinbox := SpinBox {
-                                value: 4;
-                                minimum: 1;
-                                maximum: 16;
-                            }
-                        }
-
-                        line_num_switch := Switch {
-                            text: @tr("line numbers");
-                            checked: false;
-                        }
-
-                        file_names_switch := Switch {
-                            text: @tr("file names");
-                            checked: false;
-                        }
-
-                        Text {
-                            // vertical-alignment: center;
-                            text: @tr("Aspect Ratio:");
-                        }
-                        HorizontalBox {
-                            aspect_x_spinbox := SpinBox {
-                                value: 16;
-                                minimum: 1;
-                                maximum: 2147483647; // Maximum for i32
-                            }
-                            Text {
-                                vertical-alignment: center;
-                                text: @tr("by");
-                            }
-                            aspect_y_spinbox := SpinBox {
-                                value: 9;
-                                minimum: 1;
-                                maximum: 2147483647; // Maximum for i32
-                            }
-                        }
-
-                        // force_full_columns
-                        force_full_columns_switch := Switch {
-                            text: @tr("force full columns");
-                            checked: true;
-                        }
-
-                        // ignored extensions
+            HorizontalLayout {
+                alignment: start;
+                VerticalBox {
+                    alignment: center;
+                    GroupBox {
+                        title: @tr("Settings");
                         VerticalBox {
+                            alignment: start;
+
+                            path_selecter := PathSelector {
+                                select_path => {
+                                    root.select_render_path();
+                                }
+                            }
+
+                            readable_switch := Switch {
+                                text: @tr("Readable");
+                                checked: false;
+                            }
+
+                            HorizontalBox {
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("Theme: ");
+                                }
+                                theme_combobox := ComboBox {
+                                    model: ["Solarized (dark)", "Solarized (light)", "InspiredGitHub", "base16-eighties.dark", "base16-mocha.dark", "base16-ocean.dark", "base16-ocean.light"];
+                                }
+                            }
+
+                            HorizontalBox {
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("bg-pixel-color: ");
+                                }
+                                bg_pixel_color_combobox := ComboBox {
+                                    model: ["style", "style-checkerboard-darken", "style-checkerboard-brighten", "helix-editor"];
+                                }
+                            }
+
+                            //tab spaces
+                            HorizontalBox {
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("tab spaces: ");
+                                }
+                                tab_spaces_spinbox := SpinBox {
+                                    value: 4;
+                                    minimum: 1;
+                                    maximum: 16;
+                                }
+                            }
+
+                            line_num_switch := Switch {
+                                text: @tr("line numbers");
+                                checked: false;
+                            }
+
+                            file_names_switch := Switch {
+                                text: @tr("file names");
+                                checked: false;
+                            }
+
                             Text {
-                                vertical-alignment: center;
-                                text: @tr("ignored extensions (space separated):");
+                                // vertical-alignment: center;
+                                text: @tr("Aspect Ratio:");
                             }
-                            ignored_extension_lineedit := LineEdit {
-                                placeholder-text: @tr("ignored extensions");
+                            HorizontalBox {
+                                aspect_x_spinbox := SpinBox {
+                                    value: 16;
+                                    minimum: 1;
+                                    maximum: 2147483647; // Maximum for i32
+                                }
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("by");
+                                }
+                                aspect_y_spinbox := SpinBox {
+                                    value: 9;
+                                    minimum: 1;
+                                    maximum: 2147483647; // Maximum for i32
+                                }
                             }
-                        }
+
+                            // force_full_columns
+                            force_full_columns_switch := Switch {
+                                text: @tr("force full columns");
+                                checked: true;
+                            }
+
+                            // ignored extensions
+                            VerticalBox {
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("ignored extensions (space separated):");
+                                }
+                                ignored_extension_lineedit := LineEdit {
+                                    placeholder-text: @tr("ignored extensions");
+                                }
+                            }
 
 
-                        Button {
-                            primary: true;
-                            text: "Render";
-                            clicked => { root.render() }
+                            Button {
+                                primary: true;
+                                text: "Render";
+                                clicked => { root.render() }
+                            }
                         }
                     }
                 }
             }
 
             Image {
+                horizontal-stretch: 1;
                 source: root.display_image;
             }
         }

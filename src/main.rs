@@ -6,6 +6,7 @@ use memmap2::MmapMut;
 use prodash;
 use prodash::progress::Discard;
 use rfd::FileDialog;
+use std::ffi::{OsStr, OsString};
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
 use syntect::highlighting::ThemeSet;
@@ -57,6 +58,7 @@ slint::slint! {
         out property <int> aspect_x <=> aspect_x_spinbox.value;
         out property <int> aspect_y <=> aspect_y_spinbox.value;
         out property <bool> force_full_columns <=> force_full_columns_switch.checked;
+        out property <string> ignored_extensions <=> ignored_extension_lineedit.text;
 
         HorizontalBox {
             alignment: start;
@@ -140,6 +142,17 @@ slint::slint! {
                 force_full_columns_switch := Switch {
                     text: @tr("force full columns");
                     checked: true;
+                }
+
+                // ignored extensions
+                VerticalBox {
+                    Text {
+                        vertical-alignment: center;
+                        text: @tr("ignored extensions (space separated):");
+                    }
+                    ignored_extension_lineedit := LineEdit {
+                        placeholder-text: @tr("ignored extensions");
+                    }
                 }
 
 
@@ -230,8 +243,18 @@ fn main() -> anyhow::Result<()> {
 
         println!("path_to_render: {:?}", path_to_render);
 
-        let (mut dir_contents, mut _ignored) =
-            codevis::unicode_content(&path_to_render, &[], Discard, &should_interrupt).unwrap();
+        let ignored_extensions: Vec<OsString> = main_window
+            .get_ignored_extensions()
+            .split_whitespace()
+            .map(|ext| OsString::from(ext))
+            .collect();
+        let (mut dir_contents, mut _ignored) = codevis::unicode_content(
+            &path_to_render,
+            &ignored_extensions,
+            Discard,
+            &should_interrupt,
+        )
+        .unwrap();
 
         // Sort render order by path
         dir_contents

@@ -51,6 +51,7 @@ slint::slint! {
         out property <bool> readable <=> readable_switch.checked;
         out property <string> theme <=> theme_combobox.current-value;
         out property <int> bg_pixel_color <=> bg_pixel_color_combobox.current-index;
+        out property <int> tab_spaces <=> tab_spaces_spinbox.value;
 
         HorizontalBox {
             alignment: start;
@@ -68,7 +69,7 @@ slint::slint! {
                 // StandardButton { kind: cancel; }
                 readable_switch := Switch {
                     text: @tr("Readable");
-                    checked: true;
+                    checked: false;
                 }
 
                 HorizontalBox {
@@ -90,6 +91,21 @@ slint::slint! {
                         model: ["style", "style-checkerboard-darken", "style-checkerboard-brighten", "helix-editor"];
                     }
                 }
+
+                //tab spaces
+                HorizontalBox {
+                    Text {
+                        vertical-alignment: center;
+                        text: @tr("tab spaces: ");
+                    }
+                    tab_spaces_spinbox := SpinBox {
+                        // vertical-stretch: 0;
+                        value: 4;
+                        minimum: 1;
+                        maximum: 16;
+                    }
+                }
+
                 Button {
                     primary: true;
                     text: "Render";
@@ -209,6 +225,7 @@ fn main() -> anyhow::Result<()> {
                             _ => BgColor::Style,
                         }
                     },
+                    tab_spaces: main_window.get_tab_spaces().try_into().unwrap(),
                     // bg_pixel_color: main_window.get_bg_pixel_color(),
                     // Set the rest of the fields to their default values
                     ..Default::default()

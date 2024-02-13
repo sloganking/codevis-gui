@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: Swatinem/rust-cache@v3
+    - uses: Swatinem/rust-cache@v2
 
     - name: Install system dependencies
       run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev

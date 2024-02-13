@@ -68,7 +68,6 @@ slint::slint! {
                         title: @tr("Settings");
                     VerticalBox {
                         alignment: start;
-                        width: 300px;
 
                         path_selecter := PathSelector {
                             select_path => {

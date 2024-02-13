@@ -62,10 +62,10 @@ slint::slint! {
         HorizontalBox {
             alignment: start;
             // Left settings panel
-                VerticalBox {
-                    alignment: center;
-                    GroupBox {
-                        title: @tr("Settings");
+            VerticalBox {
+                alignment: center;
+                GroupBox {
+                    title: @tr("Settings");
                     VerticalBox {
                         alignment: start;
 

@@ -56,6 +56,7 @@ slint::slint! {
         out property <bool> show_filenames <=> file_names_switch.checked;
         out property <int> aspect_x <=> aspect_x_spinbox.value;
         out property <int> aspect_y <=> aspect_y_spinbox.value;
+        out property <bool> force_full_columns <=> force_full_columns_switch.checked;
 
         HorizontalBox {
             alignment: start;
@@ -134,6 +135,13 @@ slint::slint! {
                         maximum: 2147483647; // Maximum for i32
                     }
                 }
+
+                // force_full_columns
+                force_full_columns_switch := Switch {
+                    text: @tr("force full columns");
+                    checked: true;
+                }
+
 
                 Button {
                     primary: true;
@@ -262,6 +270,7 @@ fn main() -> anyhow::Result<()> {
                         let aspect_y = main_window.get_aspect_y();
                         aspect_x as f64 / aspect_y as f64
                     },
+                    force_full_columns: main_window.get_force_full_columns(),
 
                     // Set the rest of the fields to their default values
                     ..Default::default()

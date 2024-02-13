@@ -53,6 +53,7 @@ slint::slint! {
         out property <int> bg_pixel_color <=> bg_pixel_color_combobox.current-index;
         out property <int> tab_spaces <=> tab_spaces_spinbox.value;
         out property <bool> line_nums <=> line_num_switch.checked;
+        out property <bool> show_filenames <=> file_names_switch.checked;
 
         HorizontalBox {
             alignment: start;
@@ -107,7 +108,12 @@ slint::slint! {
                 }
 
                 line_num_switch := Switch {
-                    text: @tr("line numbers: ");
+                    text: @tr("line numbers");
+                    checked: false;
+                }
+
+                file_names_switch := Switch {
+                    text: @tr("file names");
                     checked: false;
                 }
 
@@ -232,6 +238,7 @@ fn main() -> anyhow::Result<()> {
                     },
                     tab_spaces: main_window.get_tab_spaces().try_into().unwrap(),
                     line_nums: main_window.get_line_nums(),
+                    show_filenames: main_window.get_show_filenames(),
 
                     // Set the rest of the fields to their default values
                     ..Default::default()

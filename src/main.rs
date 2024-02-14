@@ -48,6 +48,7 @@ slint::slint! {
     }
 
     export component MainWindow inherits Window {
+        title: "codevis-gui";
         width: 1280px;
         height: 720px;
         callback select_render_path();

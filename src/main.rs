@@ -67,6 +67,7 @@ slint::slint! {
         out property <string> ignored_extensions <=> ignored_extension_lineedit.text;
         out property <bool> auto_rendering <=> auto_render_switch.checked;
         out property <int> auto_render_limit <=> auto_render_spinbox.value;
+        out property <int> column_width <=> column_width_spinbox.value;
 
         HorizontalBox {
             alignment: stretch;
@@ -208,6 +209,24 @@ slint::slint! {
                                 toggled => {
                                     if auto_render_switch.checked {
                                         root.render()
+                                    }
+                                }
+                            }
+
+                            // column_width
+                            HorizontalLayout {
+                                Text {
+                                    vertical-alignment: center;
+                                    text: @tr("column width: ");
+                                }
+                                column_width_spinbox := SpinBox {
+                                    value: 100;
+                                    minimum: 1;
+                                    maximum: 400;
+                                    edited => {
+                                        if auto_render_switch.checked {
+                                            root.render()
+                                        }
                                     }
                                 }
                             }
@@ -410,6 +429,7 @@ fn main() -> anyhow::Result<()> {
                         aspect_x as f64 / aspect_y as f64
                     },
                     force_full_columns: main_window.get_force_full_columns(),
+                    column_width: main_window.get_column_width().try_into().unwrap(),
 
                     // Set the rest of the fields to their default values
                     ..Default::default()
